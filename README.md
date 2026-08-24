@@ -129,4 +129,18 @@ Für jeden der 5 Slots lässt sich die Gießlogik separat definieren:
 1. **Abhängigkeiten installieren:** Stelle sicher, dass alle oben genannten HACS-Karten installiert sind.
 2. **YAML-Dateien einfügen:** Kopiere die Inhalte der bereitgestellten Dateien (`automations.yaml`, `scripts.yaml`, `helpers.yaml`, `template.yaml`) in deine eigene Home Assistant Konfiguration. (Tipp: Nutze idealerweise Home Assistant Packages).
 3. **Dashboard anlegen:** Erstelle ein neues Dashboard und füge den Code aus `dashboard.yaml` über den Raw-Konfigurationseditor ein.
-4. **Platzhalter anpassen:** Trage in der `template.yaml` deinen eigenen Außentemperatur-Sensor im Proxy-Sensor `sensor.referenztemperatur_bewaesserung` ein. Passe in der `scripts.yaml` in der `globale_benachrichtigung` deinen eigenen `notify`-Dienst an. Tausche ggf. die Entitäten für Pumpe und Ventile gegen deine eigenen aus.
+4. **⚠️ WICHTIG: Eigene Entitäten eintragen (Pflicht!)**
+   Damit das System in deinem Home Assistant funktioniert, musst du die neutralen Platzhalter im Code durch deine tatsächlichen Entitäten ersetzen. Suche in den heruntergeladenen Dateien nach folgenden Platzhaltern und passe sie an:
+
+| Neutraler Platzhalter im Code | Beschreibung / Deine Hardware | Betroffene Dateien |
+| :--- | :--- | :--- |
+| `switch.pumpe_steckdose` | Die smarte Steckdose/Relais deiner Pumpe | `dashboard.yaml`, `automations.yaml`, `scripts.yaml` |
+| `sensor.pumpe_leistung` | Der Stromverbrauchssensor (W) deiner Pumpe | `automations.yaml` |
+| `switch.ventil_slot_1` (bis `5`) | Die Relais/Ventile für Slot 1 bis 5 | `dashboard.yaml`, `automations.yaml`, `scripts.yaml`, `template.yaml` |
+| `sensor.bodenfeuchte_slot_1` (bis `5`) | Deine Bodenfeuchtigkeitssensoren (0-100%) | `dashboard.yaml`, `automations.yaml` |
+| `sensor.aussentemperatur` | Ein lokaler Temperatursensor für den Hitze-Bypass | `automations.yaml`, `template.yaml` |
+| `notify.smartphone` | Dein Notify-Dienst (z.B. `notify.mobile_app_iphone`) | `scripts.yaml` |
+| `tts.sprachausgabe` | Dein Text-to-Speech Dienst (z.B. `tts.google_translate_say`) | `scripts.yaml` |
+| `media_player.smart_speaker` | Dein Smart-Speaker für Warnungen (z.B. `media_player.wohnzimmer`) | `scripts.yaml` |
+
+*(Tipp: Wenn du keine Sprachausgabe für Warnungen nutzen möchtest, kannst du den `tts.speak`-Block in der `scripts.yaml` einfach löschen).*
