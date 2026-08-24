@@ -13,18 +13,18 @@
   alias: "💧 Bewässerung: Trockenlaufschutz Strommessung"
   trigger:
   - platform: numeric_state
-    entity_id: sensor.wsp_2_leistung
+    entity_id: sensor.pumpe_leistung
     below: 150
     for:
       seconds: 5
   condition:
   - condition: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     state: 'on'
   action:
   - action: switch.turn_off
     target:
-      entity_id: switch.wsp_2_steckdose_1
+      entity_id: switch.pumpe_steckdose
   - action: input_boolean.turn_on
     target:
       entity_id: input_boolean.pumpen_sperre
@@ -60,7 +60,7 @@
       sequence:
       - action: switch.turn_off
         target:
-          entity_id: switch.wsp_2_steckdose_1
+          entity_id: switch.pumpe_steckdose
       - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.pumpen_sperre
@@ -74,27 +74,27 @@
   mode: single
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_1
+    entity_id: sensor.bodenfeuchte_slot_1
     below: input_number.slot_1_feuchte_min
     for:
       minutes: 30
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_2
+    entity_id: sensor.bodenfeuchte_slot_2
     below: input_number.slot_2_feuchte_min
     for:
       minutes: 30
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_3
+    entity_id: sensor.bodenfeuchte_slot_3
     below: input_number.slot_3_feuchte_min
     for:
       minutes: 30
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_4
+    entity_id: sensor.bodenfeuchte_slot_4
     below: input_number.slot_4_feuchte_min
     for:
       minutes: 30
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_5
+    entity_id: sensor.bodenfeuchte_slot_5
     below: input_number.slot_5_feuchte_min
     for:
       minutes: 30
@@ -111,19 +111,19 @@
   mode: single
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_1
+    entity_id: sensor.bodenfeuchte_slot_1
     above: input_number.slot_1_feuchte_max
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_2
+    entity_id: sensor.bodenfeuchte_slot_2
     above: input_number.slot_2_feuchte_max
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_3
+    entity_id: sensor.bodenfeuchte_slot_3
     above: input_number.slot_3_feuchte_max
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_4
+    entity_id: sensor.bodenfeuchte_slot_4
     above: input_number.slot_4_feuchte_max
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_5
+    entity_id: sensor.bodenfeuchte_slot_5
     above: input_number.slot_5_feuchte_max
   action:
   - action: script.globale_benachrichtigung
@@ -137,7 +137,7 @@
   alias: "💧 Bewässerung: Warnung Hardware-Fehler Pumpe"
   trigger:
   - platform: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     to: unavailable
     for:
       minutes: 5
@@ -151,14 +151,14 @@
   alias: "🚨 Bewässerung Watchdog: Pumpe Zwangsabschaltung"
   trigger:
   - platform: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     to: 'on'
     for:
       minutes: '{{ states(''input_number.pumpen_watchdog_minuten'') | int(10) }}'
   action:
   - action: switch.turn_off
     target:
-      entity_id: switch.wsp_2_steckdose_1
+      entity_id: switch.pumpe_steckdose
   - action: script.globale_benachrichtigung
     data:
       titel: "🌊 PUMPEN-NOT-AUS"
@@ -168,7 +168,7 @@
   alias: "💧 Logbuch: Manuelle Gießvorgänge (Smart berechnet)"
   trigger:
   - platform: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     from: 'on'
     to: 'off'
   condition:
@@ -185,19 +185,19 @@
         | int }}'
       ventile:
       - name: '{{ states(''input_text.slot_1_name'') }}'
-        entity: switch.irrigation_valve_1
+        entity: switch.ventil_slot_1
         flow: input_number.slot_1_durchfluss
       - name: '{{ states(''input_text.slot_2_name'') }}'
-        entity: switch.irrigation_valve_2
+        entity: switch.ventil_slot_2
         flow: input_number.slot_2_durchfluss
       - name: '{{ states(''input_text.slot_3_name'') }}'
-        entity: switch.irrigation_valve_3
+        entity: switch.ventil_slot_3
         flow: input_number.slot_3_durchfluss
       - name: '{{ states(''input_text.slot_4_name'') }}'
-        entity: switch.irrigation_valve_4
+        entity: switch.ventil_slot_4
         flow: input_number.slot_4_durchfluss
       - name: '{{ states(''input_text.slot_5_name'') }}'
-        entity: switch.irrigation_valve_5
+        entity: switch.ventil_slot_5
         flow: input_number.slot_5_durchfluss
       pflanze: '{% set active = ventile | selectattr(''entity'', ''is_state'', ''on'')
         | map(attribute=''name'') | list %} {{ active | join('', '') if active | length
@@ -295,12 +295,12 @@
   max_exceeded: silent
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_1
+    entity_id: sensor.bodenfeuchte_slot_1
     below: input_number.slot_1_feuchte_min
     for:
       minutes: 5
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_1
+    entity_id: sensor.bodenfeuchte_slot_1
     below: input_number.slot_1_feuchte_notfall
     for:
       minutes: 5
@@ -313,18 +313,18 @@
     entity_id: input_boolean.pumpen_sperre
     state: 'off'
   - condition: template
-    value_template: '{{ states(''sensor.gw1100a_soil_moisture_1'') | float(100) <
+    value_template: '{{ states(''sensor.bodenfeuchte_slot_1'') | float(100) <
       states(''input_number.slot_1_feuchte_min'') | float(0) }}'
   - condition: template
     value_template: "{% if is_state('input_boolean.slot_1_untersetzer_modus', 'on')
-      %}\n  {% set valve = states.switch.irrigation_valve_1 %}\n  {% set last_run
+      %}\n  {% set valve = states.switch.ventil_slot_1 %}\n  {% set last_run
       = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {% set not_cd =
       states('input_number.slot_1_sperrzeit_notfall_stunden') | float(1) * 3600 %}\n
       \ {{ (as_timestamp(now()) - last_run) > not_cd }}\n{% else %}\n  true\n{% endif
       %}\n"
   - or:
     - condition: numeric_state
-      entity_id: sensor.gw1100a_soil_moisture_1
+      entity_id: sensor.bodenfeuchte_slot_1
       below: input_number.slot_1_feuchte_notfall
     - and:
       - condition: time
@@ -332,10 +332,10 @@
         before: input_datetime.slot_1_ende_zeit
       - condition: template
         value_template: "{% if is_state('input_boolean.slot_1_untersetzer_modus',
-          'on') %}\n  {% set valve = states.switch.irrigation_valve_1 %}\n  {% set
+          'on') %}\n  {% set valve = states.switch.ventil_slot_1 %}\n  {% set
           last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {%
           set base_h = states('input_number.slot_1_sperrzeit_stunden') | float(36)
-          %}\n  {% set temp = states('sensor.timmerflotte_temp_hmd_sensor_temperatur')
+          %}\n  {% set temp = states('sensor.aussentemperatur')
           | float(20) %}\n  {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle')
           | float(28.0) %}\n  {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h')
           | float(24.0) %}\n  {% set final_h = hitze_limit if (temp >= hitze_schwelle
@@ -350,7 +350,7 @@
     - action: script.pumpe_puls
       data:
         slot: '1'
-        notfall: '{{ states(''sensor.gw1100a_soil_moisture_1'') | float(100) < states(''input_number.slot_1_feuchte_notfall'')
+        notfall: '{{ states(''sensor.bodenfeuchte_slot_1'') | float(100) < states(''input_number.slot_1_feuchte_notfall'')
           | float(0) }}'
     else:
     - repeat:
@@ -363,7 +363,7 @@
           - action: script.pumpe_puls
             data:
               slot: '1'
-              notfall: '{{ states(''sensor.gw1100a_soil_moisture_1'') | float(100)
+              notfall: '{{ states(''sensor.bodenfeuchte_slot_1'') | float(100)
                 < states(''input_number.slot_1_feuchte_notfall'') | float(0) }}'
           - delay:
               minutes: '{{ states(''input_number.slot_1_sicker_pause'') | int(20)
@@ -371,7 +371,7 @@
         until:
         - or:
           - condition: template
-            value_template: '{{ states(''sensor.gw1100a_soil_moisture_1'') | float(0)
+            value_template: '{{ states(''sensor.bodenfeuchte_slot_1'') | float(0)
               > states(''input_number.slot_1_feuchte_max'') | float(100) }}'
           - condition: template
             value_template: '{{ repeat.index >= states(''input_number.maximale_giess_runden'')
@@ -382,12 +382,12 @@
   max_exceeded: silent
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_2
+    entity_id: sensor.bodenfeuchte_slot_2
     below: input_number.slot_2_feuchte_min
     for:
       minutes: 5
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_2
+    entity_id: sensor.bodenfeuchte_slot_2
     below: input_number.slot_2_feuchte_notfall
     for:
       minutes: 5
@@ -400,18 +400,18 @@
     entity_id: input_boolean.pumpen_sperre
     state: 'off'
   - condition: template
-    value_template: '{{ states(''sensor.gw1100a_soil_moisture_2'') | float(100) <
+    value_template: '{{ states(''sensor.bodenfeuchte_slot_2'') | float(100) <
       states(''input_number.slot_2_feuchte_min'') | float(0) }}'
   - condition: template
     value_template: "{% if is_state('input_boolean.slot_2_untersetzer_modus', 'on')
-      %}\n  {% set valve = states.switch.irrigation_valve_2 %}\n  {% set last_run
+      %}\n  {% set valve = states.switch.ventil_slot_2 %}\n  {% set last_run
       = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {% set not_cd =
       states('input_number.slot_2_sperrzeit_notfall_stunden') | float(1) * 3600 %}\n
       \ {{ (as_timestamp(now()) - last_run) > not_cd }}\n{% else %}\n  true\n{% endif
       %}\n"
   - or:
     - condition: numeric_state
-      entity_id: sensor.gw1100a_soil_moisture_2
+      entity_id: sensor.bodenfeuchte_slot_2
       below: input_number.slot_2_feuchte_notfall
     - and:
       - condition: time
@@ -419,10 +419,10 @@
         before: input_datetime.slot_2_ende_zeit
       - condition: template
         value_template: "{% if is_state('input_boolean.slot_2_untersetzer_modus',
-          'on') %}\n  {% set valve = states.switch.irrigation_valve_2 %}\n  {% set
+          'on') %}\n  {% set valve = states.switch.ventil_slot_2 %}\n  {% set
           last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {%
           set base_h = states('input_number.slot_2_sperrzeit_stunden') | float(36)
-          %}\n  {% set temp = states('sensor.timmerflotte_temp_hmd_sensor_temperatur')
+          %}\n  {% set temp = states('sensor.aussentemperatur')
           | float(20) %}\n  {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle')
           | float(28.0) %}\n  {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h')
           | float(24.0) %}\n  {% set final_h = hitze_limit if (temp >= hitze_schwelle
@@ -437,7 +437,7 @@
     - action: script.pumpe_puls
       data:
         slot: '2'
-        notfall: '{{ states(''sensor.gw1100a_soil_moisture_2'') | float(100) < states(''input_number.slot_2_feuchte_notfall'')
+        notfall: '{{ states(''sensor.bodenfeuchte_slot_2'') | float(100) < states(''input_number.slot_2_feuchte_notfall'')
           | float(0) }}'
     else:
     - repeat:
@@ -450,7 +450,7 @@
           - action: script.pumpe_puls
             data:
               slot: '2'
-              notfall: '{{ states(''sensor.gw1100a_soil_moisture_2'') | float(100)
+              notfall: '{{ states(''sensor.bodenfeuchte_slot_2'') | float(100)
                 < states(''input_number.slot_2_feuchte_notfall'') | float(0) }}'
           - delay:
               minutes: '{{ states(''input_number.slot_2_sicker_pause'') | int(20)
@@ -458,7 +458,7 @@
         until:
         - or:
           - condition: template
-            value_template: '{{ states(''sensor.gw1100a_soil_moisture_2'') | float(0)
+            value_template: '{{ states(''sensor.bodenfeuchte_slot_2'') | float(0)
               > states(''input_number.slot_2_feuchte_max'') | float(100) }}'
           - condition: template
             value_template: '{{ repeat.index >= states(''input_number.maximale_giess_runden'')
@@ -469,12 +469,12 @@
   max_exceeded: silent
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_3
+    entity_id: sensor.bodenfeuchte_slot_3
     below: input_number.slot_3_feuchte_min
     for:
       minutes: 5
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_3
+    entity_id: sensor.bodenfeuchte_slot_3
     below: input_number.slot_3_feuchte_notfall
     for:
       minutes: 5
@@ -487,18 +487,18 @@
     entity_id: input_boolean.pumpen_sperre
     state: 'off'
   - condition: template
-    value_template: '{{ states(''sensor.gw1100a_soil_moisture_3'') | float(100) <
+    value_template: '{{ states(''sensor.bodenfeuchte_slot_3'') | float(100) <
       states(''input_number.slot_3_feuchte_min'') | float(0) }}'
   - condition: template
     value_template: "{% if is_state('input_boolean.slot_3_untersetzer_modus', 'on')
-      %}\n  {% set valve = states.switch.irrigation_valve_3 %}\n  {% set last_run
+      %}\n  {% set valve = states.switch.ventil_slot_3 %}\n  {% set last_run
       = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {% set not_cd =
       states('input_number.slot_3_sperrzeit_notfall_stunden') | float(1) * 3600 %}\n
       \ {{ (as_timestamp(now()) - last_run) > not_cd }}\n{% else %}\n  true\n{% endif
       %}\n"
   - or:
     - condition: numeric_state
-      entity_id: sensor.gw1100a_soil_moisture_3
+      entity_id: sensor.bodenfeuchte_slot_3
       below: input_number.slot_3_feuchte_notfall
     - and:
       - condition: time
@@ -506,10 +506,10 @@
         before: input_datetime.slot_3_ende_zeit
       - condition: template
         value_template: "{% if is_state('input_boolean.slot_3_untersetzer_modus',
-          'on') %}\n  {% set valve = states.switch.irrigation_valve_3 %}\n  {% set
+          'on') %}\n  {% set valve = states.switch.ventil_slot_3 %}\n  {% set
           last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {%
           set base_h = states('input_number.slot_3_sperrzeit_stunden') | float(36)
-          %}\n  {% set temp = states('sensor.timmerflotte_temp_hmd_sensor_temperatur')
+          %}\n  {% set temp = states('sensor.aussentemperatur')
           | float(20) %}\n  {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle')
           | float(28.0) %}\n  {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h')
           | float(24.0) %}\n  {% set final_h = hitze_limit if (temp >= hitze_schwelle
@@ -524,7 +524,7 @@
     - action: script.pumpe_puls
       data:
         slot: '3'
-        notfall: '{{ states(''sensor.gw1100a_soil_moisture_3'') | float(100) < states(''input_number.slot_3_feuchte_notfall'')
+        notfall: '{{ states(''sensor.bodenfeuchte_slot_3'') | float(100) < states(''input_number.slot_3_feuchte_notfall'')
           | float(0) }}'
     else:
     - repeat:
@@ -537,7 +537,7 @@
           - action: script.pumpe_puls
             data:
               slot: '3'
-              notfall: '{{ states(''sensor.gw1100a_soil_moisture_3'') | float(100)
+              notfall: '{{ states(''sensor.bodenfeuchte_slot_3'') | float(100)
                 < states(''input_number.slot_3_feuchte_notfall'') | float(0) }}'
           - delay:
               minutes: '{{ states(''input_number.slot_3_sicker_pause'') | int(20)
@@ -545,7 +545,7 @@
         until:
         - or:
           - condition: template
-            value_template: '{{ states(''sensor.gw1100a_soil_moisture_3'') | float(0)
+            value_template: '{{ states(''sensor.bodenfeuchte_slot_3'') | float(0)
               > states(''input_number.slot_3_feuchte_max'') | float(100) }}'
           - condition: template
             value_template: '{{ repeat.index >= states(''input_number.maximale_giess_runden'')
@@ -556,12 +556,12 @@
   max_exceeded: silent
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_4
+    entity_id: sensor.bodenfeuchte_slot_4
     below: input_number.slot_4_feuchte_min
     for:
       minutes: 5
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_4
+    entity_id: sensor.bodenfeuchte_slot_4
     below: input_number.slot_4_feuchte_notfall
     for:
       minutes: 5
@@ -574,18 +574,18 @@
     entity_id: input_boolean.pumpen_sperre
     state: 'off'
   - condition: template
-    value_template: '{{ states(''sensor.gw1100a_soil_moisture_4'') | float(100) <
+    value_template: '{{ states(''sensor.bodenfeuchte_slot_4'') | float(100) <
       states(''input_number.slot_4_feuchte_min'') | float(0) }}'
   - condition: template
     value_template: "{% if is_state('input_boolean.slot_4_untersetzer_modus', 'on')
-      %}\n  {% set valve = states.switch.irrigation_valve_4 %}\n  {% set last_run
+      %}\n  {% set valve = states.switch.ventil_slot_4 %}\n  {% set last_run
       = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {% set not_cd =
       states('input_number.slot_4_sperrzeit_notfall_stunden') | float(1) * 3600 %}\n
       \ {{ (as_timestamp(now()) - last_run) > not_cd }}\n{% else %}\n  true\n{% endif
       %}\n"
   - or:
     - condition: numeric_state
-      entity_id: sensor.gw1100a_soil_moisture_4
+      entity_id: sensor.bodenfeuchte_slot_4
       below: input_number.slot_4_feuchte_notfall
     - and:
       - condition: time
@@ -593,10 +593,10 @@
         before: input_datetime.slot_4_ende_zeit
       - condition: template
         value_template: "{% if is_state('input_boolean.slot_4_untersetzer_modus',
-          'on') %}\n  {% set valve = states.switch.irrigation_valve_4 %}\n  {% set
+          'on') %}\n  {% set valve = states.switch.ventil_slot_4 %}\n  {% set
           last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {%
           set base_h = states('input_number.slot_4_sperrzeit_stunden') | float(36)
-          %}\n  {% set temp = states('sensor.timmerflotte_temp_hmd_sensor_temperatur')
+          %}\n  {% set temp = states('sensor.aussentemperatur')
           | float(20) %}\n  {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle')
           | float(28.0) %}\n  {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h')
           | float(24.0) %}\n  {% set final_h = hitze_limit if (temp >= hitze_schwelle
@@ -611,7 +611,7 @@
     - action: script.pumpe_puls
       data:
         slot: '4'
-        notfall: '{{ states(''sensor.gw1100a_soil_moisture_4'') | float(100) < states(''input_number.slot_4_feuchte_notfall'')
+        notfall: '{{ states(''sensor.bodenfeuchte_slot_4'') | float(100) < states(''input_number.slot_4_feuchte_notfall'')
           | float(0) }}'
     else:
     - repeat:
@@ -624,7 +624,7 @@
           - action: script.pumpe_puls
             data:
               slot: '4'
-              notfall: '{{ states(''sensor.gw1100a_soil_moisture_4'') | float(100)
+              notfall: '{{ states(''sensor.bodenfeuchte_slot_4'') | float(100)
                 < states(''input_number.slot_4_feuchte_notfall'') | float(0) }}'
           - delay:
               minutes: '{{ states(''input_number.slot_4_sicker_pause'') | int(20)
@@ -632,7 +632,7 @@
         until:
         - or:
           - condition: template
-            value_template: '{{ states(''sensor.gw1100a_soil_moisture_4'') | float(0)
+            value_template: '{{ states(''sensor.bodenfeuchte_slot_4'') | float(0)
               > states(''input_number.slot_4_feuchte_max'') | float(100) }}'
           - condition: template
             value_template: '{{ repeat.index >= states(''input_number.maximale_giess_runden'')
@@ -643,12 +643,12 @@
   max_exceeded: silent
   trigger:
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_5
+    entity_id: sensor.bodenfeuchte_slot_5
     below: input_number.slot_5_feuchte_min
     for:
       minutes: 5
   - platform: numeric_state
-    entity_id: sensor.gw1100a_soil_moisture_5
+    entity_id: sensor.bodenfeuchte_slot_5
     below: input_number.slot_5_feuchte_notfall
     for:
       minutes: 5
@@ -661,18 +661,18 @@
     entity_id: input_boolean.pumpen_sperre
     state: 'off'
   - condition: template
-    value_template: '{{ states(''sensor.gw1100a_soil_moisture_5'') | float(100) <
+    value_template: '{{ states(''sensor.bodenfeuchte_slot_5'') | float(100) <
       states(''input_number.slot_5_feuchte_min'') | float(0) }}'
   - condition: template
     value_template: "{% if is_state('input_boolean.slot_5_untersetzer_modus', 'on')
-      %}\n  {% set valve = states.switch.irrigation_valve_5 %}\n  {% set last_run
+      %}\n  {% set valve = states.switch.ventil_slot_5 %}\n  {% set last_run
       = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {% set not_cd =
       states('input_number.slot_5_sperrzeit_notfall_stunden') | float(1) * 3600 %}\n
       \ {{ (as_timestamp(now()) - last_run) > not_cd }}\n{% else %}\n  true\n{% endif
       %}\n"
   - or:
     - condition: numeric_state
-      entity_id: sensor.gw1100a_soil_moisture_5
+      entity_id: sensor.bodenfeuchte_slot_5
       below: input_number.slot_5_feuchte_notfall
     - and:
       - condition: time
@@ -680,10 +680,10 @@
         before: input_datetime.slot_5_ende_zeit
       - condition: template
         value_template: "{% if is_state('input_boolean.slot_5_untersetzer_modus',
-          'on') %}\n  {% set valve = states.switch.irrigation_valve_5 %}\n  {% set
+          'on') %}\n  {% set valve = states.switch.ventil_slot_5 %}\n  {% set
           last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}\n  {%
           set base_h = states('input_number.slot_5_sperrzeit_stunden') | float(36)
-          %}\n  {% set temp = states('sensor.timmerflotte_temp_hmd_sensor_temperatur')
+          %}\n  {% set temp = states('sensor.aussentemperatur')
           | float(20) %}\n  {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle')
           | float(28.0) %}\n  {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h')
           | float(24.0) %}\n  {% set final_h = hitze_limit if (temp >= hitze_schwelle
@@ -698,7 +698,7 @@
     - action: script.pumpe_puls
       data:
         slot: '5'
-        notfall: '{{ states(''sensor.gw1100a_soil_moisture_5'') | float(100) < states(''input_number.slot_5_feuchte_notfall'')
+        notfall: '{{ states(''sensor.bodenfeuchte_slot_5'') | float(100) < states(''input_number.slot_5_feuchte_notfall'')
           | float(0) }}'
     else:
     - repeat:
@@ -711,7 +711,7 @@
           - action: script.pumpe_puls
             data:
               slot: '5'
-              notfall: '{{ states(''sensor.gw1100a_soil_moisture_5'') | float(100)
+              notfall: '{{ states(''sensor.bodenfeuchte_slot_5'') | float(100)
                 < states(''input_number.slot_5_feuchte_notfall'') | float(0) }}'
           - delay:
               minutes: '{{ states(''input_number.slot_5_sicker_pause'') | int(20)
@@ -719,7 +719,7 @@
         until:
         - or:
           - condition: template
-            value_template: '{{ states(''sensor.gw1100a_soil_moisture_5'') | float(0)
+            value_template: '{{ states(''sensor.bodenfeuchte_slot_5'') | float(0)
               > states(''input_number.slot_5_feuchte_max'') | float(100) }}'
           - condition: template
             value_template: '{{ repeat.index >= states(''input_number.maximale_giess_runden'')
@@ -729,29 +729,21 @@
   mode: single
   trigger:
   - platform: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     to: 'on'
-  - platform: state
-    entity_id:
-    - switch.irrigation_valve_1
-    - switch.irrigation_valve_2
-    - switch.irrigation_valve_3
-    - switch.irrigation_valve_4
-    - switch.irrigation_valve_5
-    to: 'off'
   condition:
   - condition: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     state: 'on'
   - condition: template
-    value_template: "{% set ventile = [\n  states('switch.irrigation_valve_1'),\n
-      \ states('switch.irrigation_valve_2'),\n  states('switch.irrigation_valve_3'),\n
-      \ states('switch.irrigation_valve_4'),\n  states('switch.irrigation_valve_5')\n]
+    value_template: "{% set ventile = [\n  states('switch.ventil_slot_1'),\n
+      \ states('switch.ventil_slot_2'),\n  states('switch.ventil_slot_3'),\n
+      \ states('switch.ventil_slot_4'),\n  states('switch.ventil_slot_5')\n]
       %} {{ 'on' not in ventile }}\n"
   action:
   - action: switch.turn_off
     target:
-      entity_id: switch.wsp_2_steckdose_1
+      entity_id: switch.pumpe_steckdose
   - action: script.globale_benachrichtigung
     data:
       titel: "🛡️ Pumpen-Schutz"
@@ -761,25 +753,25 @@
   mode: restart
   trigger:
   - platform: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     to: 'on'
     for:
-      minutes: "{% set ns = namespace(max_dauer=0) %} {% if is_state('switch.irrigation_valve_1',
+      minutes: "{% set ns = namespace(max_dauer=0) %} {% if is_state('switch.ventil_slot_1',
         'on') %}\n  {% set ns.max_dauer = [ns.max_dauer, states('input_number.slot_1_impuls_dauer')
-        | int(0)] | max %}\n{% endif %} {% if is_state('switch.irrigation_valve_2',
+        | int(0)] | max %}\n{% endif %} {% if is_state('switch.ventil_slot_2',
         'on') %}\n  {% set ns.max_dauer = [ns.max_dauer, states('input_number.slot_2_impuls_dauer')
-        | int(0)] | max %}\n{% endif %} {% if is_state('switch.irrigation_valve_3',
+        | int(0)] | max %}\n{% endif %} {% if is_state('switch.ventil_slot_3',
         'on') %}\n  {% set ns.max_dauer = [ns.max_dauer, states('input_number.slot_3_impuls_dauer')
-        | int(0)] | max %}\n{% endif %} {% if is_state('switch.irrigation_valve_4',
+        | int(0)] | max %}\n{% endif %} {% if is_state('switch.ventil_slot_4',
         'on') %}\n  {% set ns.max_dauer = [ns.max_dauer, states('input_number.slot_4_impuls_dauer')
-        | int(0)] | max %}\n{% endif %} {% if is_state('switch.irrigation_valve_5',
+        | int(0)] | max %}\n{% endif %} {% if is_state('switch.ventil_slot_5',
         'on') %}\n  {% set ns.max_dauer = [ns.max_dauer, states('input_number.slot_5_impuls_dauer')
         | int(0)] | max %}\n{% endif %} {{ ns.max_dauer + 2 if ns.max_dauer > 0 else
         1 }}\n"
   action:
   - action: switch.turn_off
     target:
-      entity_id: switch.wsp_2_steckdose_1
+      entity_id: switch.pumpe_steckdose
   - action: script.globale_benachrichtigung
     data:
       titel: "🚨 Watchdog Not-Aus!"
@@ -790,14 +782,14 @@
   mode: single
   trigger:
   - platform: state
-    entity_id: switch.wsp_2_steckdose_1
+    entity_id: switch.pumpe_steckdose
     to: 'off'
   action:
   - action: switch.turn_off
     target:
       entity_id:
-      - switch.irrigation_valve_1
-      - switch.irrigation_valve_2
-      - switch.irrigation_valve_3
-      - switch.irrigation_valve_4
-      - switch.irrigation_valve_5
+      - switch.ventil_slot_1
+      - switch.ventil_slot_2
+      - switch.ventil_slot_3
+      - switch.ventil_slot_4
+      - switch.ventil_slot_5
