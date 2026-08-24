@@ -1,6 +1,6 @@
 globale_benachrichtigung:
   alias: Globale Benachrichtigung
-  description: "Sendet Benachrichtigungen an ein Smartphone und einen Smart Speaker"
+  description: Sendet Benachrichtigungen an ein Smartphone und einen Smart Speaker
   fields:
     titel:
       name: Titel der Nachricht
@@ -11,99 +11,106 @@ globale_benachrichtigung:
       description: Der Text, der gesendet und gesprochen werden soll.
       required: true
   sequence:
-    - action: notify.send_message
-      target:
-        entity_id: notify.smartphone
-      data:
-        title: "{{ titel }}"
-        message: "{{ nachricht }}"
-        
-    - action: tts.speak
-      target:
-        entity_id: tts.sprachausgabe
-      data:
-        cache: true
-        media_player_entity_id: media_player.smart_speaker
-        message: "{{ nachricht }}"
-
+  - action: notify.send_message
+    target:
+      entity_id: notify.smartphone
+    data:
+      title: '{{ titel }}'
+      message: '{{ nachricht }}'
+  - action: tts.speak
+    target:
+      entity_id: tts.sprachausgabe
+    data:
+      cache: true
+      media_player_entity_id: media_player.smart_speaker
+      message: '{{ nachricht }}'
 fass_befuellt_reset:
-  alias: "Wasserfass befüllt (Reset)"
+  alias: Wasserfass befüllt (Reset)
   icon: mdi:water-check
   sequence:
-    - action: input_number.set_value
-      target:
-        entity_id: input_number.wasserverbrauch_aktuell
-      data:
-        value: 0
-    - action: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.pumpen_sperre
-
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.wasserverbrauch_aktuell
+    data:
+      value: 0
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.pumpen_sperre
 wasserverbrauch_manuell_korrigieren:
-  alias: "Wasserverbrauch manuell korrigieren"
+  alias: Wasserverbrauch manuell korrigieren
   sequence:
-    - action: input_number.set_value
-      target:
-        entity_id: input_number.wasserverbrauch_aktuell
-      data:
-        value: >
-          {% set max_vol = states('input_number.fass_volumen_max') | float(60.0) %}
-          {{ (max_vol - states('input_number.wasserverbrauch_korrektur') | float(0)) | round(3) }}
-
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.wasserverbrauch_aktuell
+    data:
+      value: "{% set max_vol = states('input_number.fass_volumen_max') | float(60.0)\n%}\n{{
+        (max_vol - states('input_number.wasserverbrauch_korrektur') | float(0)) |
+        round(3) }}\n"
 pumpe_puls:
-  alias: "Hardware: Pumpen-Impuls (Slot-Queued)"
+  alias: 'Hardware: Pumpen-Impuls (Slot-Queued)'
   mode: queued
   max: 10
   fields:
     slot:
-      name: "Slot"
-      description: "Nummer des Slots (1, 2, 3, 4, 5)"
+      name: Slot
+      description: Nummer des Slots (1, 2, 3, 4, 5)
       required: true
   sequence:
-    - condition: state
-      entity_id: input_boolean.pumpen_sperre
-      state: "off"
-    - variables:
-        dauer_min: "{{ states('input_number.slot_' ~ slot ~ '_impuls_dauer') | float(2) }}"
-        rate_lh: "{{ states('input_number.slot_' ~ slot ~ '_durchfluss') | float(20) }}"
-        verbrauch: "{{ (dauer_min * (rate_lh / 60)) | round(3) }}"
-        anzeige_name: "{{ states('input_text.slot_' ~ slot ~ '_name') }}"
-    - action: input_text.set_value
-      target: { entity_id: input_text.aktuelles_giessevent }
-      data:
-        value: "Puls: {{ anzeige_name }}"
-    - action: switch.turn_on
-      target:
-        entity_id: "switch.ventil_slot_{{ slot }}"
-    - delay: "00:00:02"
-    - action: switch.turn_on
-      target: { entity_id: switch.pumpe_steckdose }
-    - delay: "{{ (dauer_min * 60) | int }}"
-    - action: switch.turn_off
-      target: { entity_id: switch.pumpe_steckdose }
-    - delay: "00:00:02"
-    - action: switch.turn_off
-      target:
-        entity_id: "switch.ventil_slot_{{ slot }}"
-    - action: switch.turn_off
-      target: { entity_id: switch.pumpe_steckdose }
-    - action: utility_meter.calibrate
-      target: { entity_id: sensor.verbrauchszahler_giesswasser }
-      data:
-        value: "{{ (states('sensor.verbrauchszahler_giesswasser') | float(0) + verbrauch) | round(3) }}"
-    - action: input_number.set_value
-      target: { entity_id: input_number.wasserverbrauch_aktuell }
-      data:
-        value: "{{ (states('input_number.wasserverbrauch_aktuell') | float(0) + verbrauch) | round(3) }}"
-    - event: giess_event
-      event_data:
-        pflanze: "{{ anzeige_name }}"
-        dauer: "{{ (dauer_min * 60) | int }}"
-        fluss: "{{ rate_lh }}"
-        verbrauch: "{{ verbrauch }}"
-        type: "A"
-    - delay: "00:00:30"
-    - action: input_text.set_value
-      target: { entity_id: input_text.aktuelles_giessevent }
-      data:
-        value: ""
+  - condition: state
+    entity_id: input_boolean.pumpen_sperre
+    state: 'off'
+  - variables:
+      dauer_min: '{{ states(''input_number.slot_'' ~ slot ~ ''_impuls_dauer'') | float(2)
+        }}'
+      rate_lh: '{{ states(''input_number.slot_'' ~ slot ~ ''_durchfluss'') | float(20)
+        }}'
+      verbrauch: '{{ (dauer_min * (rate_lh / 60)) | round(3) }}'
+      anzeige_name: '{{ states(''input_text.slot_'' ~ slot ~ ''_name'') }}'
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.aktuelles_giessevent
+    data:
+      value: 'Puls: {{ anzeige_name }}'
+  - action: switch.turn_on
+    target:
+      entity_id: switch.ventil_slot_{{ slot }}
+  - delay: 00:00:02
+  - action: switch.turn_on
+    target:
+      entity_id: switch.pumpe_steckdose
+  - delay: '{{ (dauer_min * 60) | int }}'
+  - action: switch.turn_off
+    target:
+      entity_id: switch.pumpe_steckdose
+  - delay: 00:00:02
+  - action: switch.turn_off
+    target:
+      entity_id: switch.ventil_slot_{{ slot }}
+  - action: switch.turn_off
+    target:
+      entity_id: switch.pumpe_steckdose
+  - action: utility_meter.calibrate
+    target:
+      entity_id: sensor.verbrauchszahler_giesswasser
+    data:
+      value: '{{ (states(''sensor.verbrauchszahler_giesswasser'') | float(0) + verbrauch)
+        | round(3) }}'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.wasserverbrauch_aktuell
+    data:
+      value: '{{ (states(''input_number.wasserverbrauch_aktuell'') | float(0) + verbrauch)
+        | round(3) }}'
+  - event: giess_event
+    event_data:
+      pflanze: '{{ anzeige_name }}'
+      dauer: '{{ (dauer_min * 60) | int }}'
+      fluss: '{{ rate_lh }}'
+      verbrauch: '{{ verbrauch }}'
+      type: A
+  - delay: 00:00:30
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.aktuelles_giessevent
+    data:
+      value: ''
