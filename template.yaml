@@ -1,0 +1,347 @@
+- sensor:
+    - name: "Fass Restwasser"
+      state: >
+        {% set max_vol = states('input_number.fass_volumen_max') | float(60.0) %}
+        {{ (max_vol - states('input_number.wasserverbrauch_aktuell') | float(0)) | round(2) }}
+      unit_of_measurement: "L"
+
+    - name: "Fass Restwasser Prozent"
+      state: >
+        {% set max_vol = states('input_number.fass_volumen_max') | float(60.0) %}
+        {{ (((max_vol - states('input_number.wasserverbrauch_aktuell') | float(0)) / max_vol) * 100) | round(2) }}
+      unit_of_measurement: "%"
+
+    - name: "Fass Füllstand Status"
+      unique_id: fass_fullstand_status
+      icon: mdi:barrel
+      state: >
+        {% set rest = states('sensor.fass_restwasser') | float(100) %}
+        {% set tot = states('input_number.fass_totvolumen') | float(0) %}
+        {% set warn_puffer = states('input_number.fass_warnpuffer') | float(5.0) %}
+
+        {% if rest <= tot %}
+          leer
+        {% elif rest <= (tot + warn_puffer) %}
+          niedrig
+        {% else %}
+          normal
+        {% endif %}
+
+    - name: "Referenztemperatur Bewässerung"
+      unique_id: referenztemperatur_bewaesserung
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: mdi:thermometer-water
+      state: >
+        {{ states('sensor.aussentemperatur') | float(20) }}
+
+    # --- SLOT 1 ---
+    - name: "Slot 1: Sperrzeit Rest"
+      unique_id: slot_1_sperrzeit_rest
+      icon: mdi:timer-sand
+      state: >
+        {% set valve = states.switch.ventil_slot_1 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_1_sperrzeit_stunden') | float(36) %}
+          {% set temp = states('sensor.aussentemperatur') | float(20) %}
+          {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle') | float(28.0) %}
+          {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h') | float(24.0) %}
+          {% set final_h = hitze_limit if (temp >= hitze_schwelle and base_h > hitze_limit) else base_h %}
+          {% set target_time = last_run + (final_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    - name: "Slot 1: Notfall-Sperrzeit Rest"
+      unique_id: slot_1_notfall_sperrzeit_rest
+      icon: mdi:timer-alert
+      state: >
+        {% set valve = states.switch.ventil_slot_1 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_1_sperrzeit_notfall_stunden') | float(1) %}
+          {% set target_time = last_run + (base_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    # --- SLOT 2 ---
+    - name: "Slot 2: Sperrzeit Rest"
+      unique_id: slot_2_sperrzeit_rest
+      icon: mdi:timer-sand
+      state: >
+        {% set valve = states.switch.ventil_slot_2 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_2_sperrzeit_stunden') | float(36) %}
+          {% set temp = states('sensor.aussentemperatur') | float(20) %}
+          {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle') | float(28.0) %}
+          {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h') | float(24.0) %}
+          {% set final_h = hitze_limit if (temp >= hitze_schwelle and base_h > hitze_limit) else base_h %}
+          {% set target_time = last_run + (final_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    - name: "Slot 2: Notfall-Sperrzeit Rest"
+      unique_id: slot_2_notfall_sperrzeit_rest
+      icon: mdi:timer-alert
+      state: >
+        {% set valve = states.switch.ventil_slot_2 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_2_sperrzeit_notfall_stunden') | float(1) %}
+          {% set target_time = last_run + (base_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    # --- SLOT 3 ---
+    - name: "Slot 3: Sperrzeit Rest"
+      unique_id: slot_3_sperrzeit_rest
+      icon: mdi:timer-sand
+      state: >
+        {% set valve = states.switch.ventil_slot_3 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_3_sperrzeit_stunden') | float(36) %}
+          {% set temp = states('sensor.aussentemperatur') | float(20) %}
+          {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle') | float(28.0) %}
+          {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h') | float(24.0) %}
+          {% set final_h = hitze_limit if (temp >= hitze_schwelle and base_h > hitze_limit) else base_h %}
+          {% set target_time = last_run + (final_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    - name: "Slot 3: Notfall-Sperrzeit Rest"
+      unique_id: slot_3_notfall_sperrzeit_rest
+      icon: mdi:timer-alert
+      state: >
+        {% set valve = states.switch.ventil_slot_3 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_3_sperrzeit_notfall_stunden') | float(1) %}
+          {% set target_time = last_run + (base_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    # --- SLOT 4 ---
+    - name: "Slot 4: Sperrzeit Rest"
+      unique_id: slot_4_sperrzeit_rest
+      icon: mdi:timer-sand
+      state: >
+        {% set valve = states.switch.ventil_slot_4 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_4_sperrzeit_stunden') | float(36) %}
+          {% set temp = states('sensor.aussentemperatur') | float(20) %}
+          {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle') | float(28.0) %}
+          {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h') | float(24.0) %}
+          {% set final_h = hitze_limit if (temp >= hitze_schwelle and base_h > hitze_limit) else base_h %}
+          {% set target_time = last_run + (final_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    - name: "Slot 4: Notfall-Sperrzeit Rest"
+      unique_id: slot_4_notfall_sperrzeit_rest
+      icon: mdi:timer-alert
+      state: >
+        {% set valve = states.switch.ventil_slot_4 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_4_sperrzeit_notfall_stunden') | float(1) %}
+          {% set target_time = last_run + (base_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    # --- SLOT 5 ---
+    - name: "Slot 5: Sperrzeit Rest"
+      unique_id: slot_5_sperrzeit_rest
+      icon: mdi:timer-sand
+      state: >
+        {% set valve = states.switch.ventil_slot_5 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_5_sperrzeit_stunden') | float(36) %}
+          {% set temp = states('sensor.aussentemperatur') | float(20) %}
+          {% set hitze_schwelle = states('input_number.sperrzeit_hitze_schwelle') | float(28.0) %}
+          {% set hitze_limit = states('input_number.sperrzeit_hitze_max_h') | float(24.0) %}
+          {% set final_h = hitze_limit if (temp >= hitze_schwelle and base_h > hitze_limit) else base_h %}
+          {% set target_time = last_run + (final_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+    - name: "Slot 5: Notfall-Sperrzeit Rest"
+      unique_id: slot_5_notfall_sperrzeit_rest
+      icon: mdi:timer-alert
+      state: >
+        {% set valve = states.switch.ventil_slot_5 %}
+        {% set last_run = as_timestamp(valve.last_changed, 0) if valve else 0 %}
+        {% if last_run == 0 %}
+          Bereit
+        {% else %}
+          {% set base_h = states('input_number.slot_5_sperrzeit_notfall_stunden') | float(1) %}
+          {% set target_time = last_run + (base_h * 3600) %}
+          {% set now_ts = as_timestamp(now()) %}
+          {% if now_ts >= target_time %}
+            Bereit
+          {% else %}
+            {% set diff = target_time - now_ts %}
+            {% set hours = (diff // 3600) | int %}
+            {% set minutes = ((diff % 3600) // 60) | int %}
+            {% if hours > 0 %}
+              {{ hours }} h {{ minutes }} min
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+- trigger:
+    - platform: event
+      event_type: giess_event
+  sensor:
+    - name: "Gieß Historie"
+      unique_id: giess_historie
+      icon: mdi:history
+      state: "{{ now().strftime('%d.%m. %H:%M') }}"
+      attributes:
+        letzte_runden: >
+          {% set history = this.attributes.letzte_runden | default([]) %}
+          {% set data = trigger.event.data %}
+          {% if data.pflanze is defined %}
+            {% set new_item = {
+              'zeit': now().strftime('%d.%m. %H:%M:%S'),
+              'pflanze': data.pflanze,
+              'dauer': data.dauer,
+              'fluss': data.fluss,
+              'verbrauch': data.verbrauch,
+              'type': data.type | default('A', true)
+            } %}
+            {{ ([new_item] + history)[:30] }} 
+          {% else %}
+            {{ history }}
+          {% endif %}
