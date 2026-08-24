@@ -1,0 +1,54 @@
+slot_1_start_zeit:
+  name: "Slot 1: Fenster Start"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-start
+slot_1_ende_zeit:
+  name: "Slot 1: Fenster Ende"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-end
+
+slot_2_start_zeit:
+  name: "Slot 2: Fenster Start"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-start
+slot_2_ende_zeit:
+  name: "Slot 2: Fenster Ende"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-end
+
+slot_3_start_zeit:
+  name: "Slot 3: Fenster Start"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-start
+slot_3_ende_zeit:
+  name: "Slot 3: Fenster Ende"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-end
+
+slot_4_start_zeit:
+  name: "Slot 4: Fenster Start"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-start
+slot_4_ende_zeit:
+  name: "Slot 4: Fenster Ende"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-end
+
+slot_5_start_zeit:
+  name: "Slot 5: Fenster Start"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-start
+slot_5_ende_zeit:
+  name: "Slot 5: Fenster Ende"
+  has_date: false
+  has_time: true
+  icon: mdi:clock-end
