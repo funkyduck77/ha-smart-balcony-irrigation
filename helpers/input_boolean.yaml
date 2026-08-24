@@ -1,0 +1,35 @@
+pumpen_sperre:
+  name: "Pumpen-Sperre"
+  icon: mdi:water-pump-off
+
+slot_1_sonnen_modus:
+  name: "Slot 1: Sonne statt Uhrzeit"
+  icon: mdi:theme-light-dark
+slot_2_sonnen_modus:
+  name: "Slot 2: Sonne statt Uhrzeit"
+  icon: mdi:theme-light-dark
+slot_3_sonnen_modus:
+  name: "Slot 3: Sonne statt Uhrzeit"
+  icon: mdi:theme-light-dark
+slot_4_sonnen_modus:
+  name: "Slot 4: Sonne statt Uhrzeit"
+  icon: mdi:theme-light-dark
+slot_5_sonnen_modus:
+  name: "Slot 5: Sonne statt Uhrzeit"
+  icon: mdi:theme-light-dark
+
+slot_1_untersetzer_modus:
+  name: "Slot 1: Untersetzer-Modus"
+  icon: mdi:tray-full
+slot_2_untersetzer_modus:
+  name: "Slot 2: Untersetzer-Modus"
+  icon: mdi:tray-full
+slot_3_untersetzer_modus:
+  name: "Slot 3: Untersetzer-Modus"
+  icon: mdi:tray-full
+slot_4_untersetzer_modus:
+  name: "Slot 4: Untersetzer-Modus"
+  icon: mdi:tray-full
+slot_5_untersetzer_modus:
+  name: "Slot 5: Untersetzer-Modus"
+  icon: mdi:tray-full
