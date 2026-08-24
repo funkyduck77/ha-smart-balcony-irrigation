@@ -10,16 +10,16 @@ Ein intelligentes, vollautomatisiertes und ausfallsicheres Bewässerungssystem f
 
 ## 📸 Screenshots
 
-![Dashboard Hauptansicht](/pfad/zum/bild/Screenshot 2026-08-24 095135.png)
+![Dashboard Hauptansicht]
 *Das Responsive 2-Spalten-Layout auf dem Desktop.*
 
-![Dashboard Mobile](/pfad/zum/bild/Screenshot 2026-08-24 095220.png)
+![Dashboard Mobile]
 *Die optimierte 1-Spalten-Ansicht für mobile Endgeräte.*
 
-![Pflanzennamen Setup](/pfad/zum/bild/Screenshot 2026-08-24 095258.png)
+![Pflanzennamen Setup]
 *Zentrale Vergabe der Pflanzennamen in den globalen Einstellungen.*
 
-![Globale Einstellungen](/pfad/zum/bild/Screenshot 2026-08-24 095309.png)
+![Globale Einstellungen]
 *Zentrale Konfiguration für Wasserfass und Watchdogs.*
 
 ## 🛡️ Sicherheitskonzept (Die Watchdogs)
