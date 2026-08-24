@@ -173,7 +173,7 @@ Für jeden der 5 Slots lässt sich die Gießlogik separat definieren:
 ## 🚀 Installation & Setup
 
 1. **Abhängigkeiten installieren:** Stelle sicher, dass alle oben genannten HACS-Karten installiert sind.
-2. **YAML-Dateien einfügen:** Kopiere die Inhalte der bereitgestellten Dateien (`automations.yaml`, `scripts.yaml`, `helpers.yaml`, `template.yaml`) in deine eigene Home Assistant Konfiguration. (Tipp: Nutze idealerweise Home Assistant Packages).
+2. **YAML-Dateien einfügen:** Kopiere die bereitgestellten Hauptdateien (`automations.yaml`, `scripts.yaml`, `template.yaml`) sowie den kompletten Ordner `helpers` (inklusive der 4 darin liegenden Dateien) in deine eigene Home Assistant Konfiguration. 
 3. **Dashboard anlegen:** Erstelle ein neues Dashboard und füge den Code aus `dashboard.yaml` über den Raw-Konfigurationseditor ein.
 4. **⚠️ WICHTIG: Eigene Entitäten eintragen (Pflicht!)**
    Damit das System in deinem Home Assistant funktioniert, musst du die neutralen Platzhalter im Code durch deine tatsächlichen Entitäten ersetzen. Suche in den heruntergeladenen Dateien nach folgenden Platzhaltern und passe sie an:
