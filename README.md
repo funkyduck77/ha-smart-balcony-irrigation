@@ -78,19 +78,65 @@ Da Wasserschäden auf Balkonen fatal sind, verfügt das System über mehrere red
 
 ## 🛠️ Stückliste (Hardware & Komponenten)
 
-- **Wassertank:** 60 Liter Wasserfass.
-- **Pumpe:** T.I.P. Deep Inox (DIO) 45/13 (4-Zoll Tiefbrunnenpumpe).
-- **Pumpen-Steuerung:** WLAN-Steckdose mit aktiver Strommessung (z.B. Shelly Plus Plug S).
-- **Ventile:** 5 unabhängige Zonen/Magnetventile für individuelle Bewässerung (`switch.irrigation_valve_1` bis `5`).
-- **Bodenfeuchtesensoren:** 5x Ecowitt GW1100A Soil Moisture Sensoren.
-- **Klima-Sensoren:** Temperatur- & Luftfeuchtigkeitssensoren (z.B. Ecowitt oder Zigbee).
+**Steuerung & Elektronik:**
+- **Zentrale:** Home Assistant (inkl. HACS)
+- **Ventil-Steuerung (Microcontroller):** ESP32 NodeMCU mit Terminalboard
+- **Klima-Sensor (Hitze-Bypass):** IKEA TIMMERFLOTTE Temperatur-/Feuchtigkeitssensor smart
+- **Bodenfeuchtesensoren:** 5x Ecowitt GW1100A Soil Moisture Sensoren
+- **Pumpen-Steuerung:** IKEA TOFSMYGGA Steckdose für draußen (smart)
+- **Netzteil (12V):** Schaltnetzteil 230V auf DC 12V 20A LED Transformator (240W)
+- **Spannungswandler (für ESP32):** AC/DC 12V/24V zu DC 5V 5A 25W Wandler
+- **Gehäuselüfter 40 mm 5V:** 2x optional, sollte auch ohne funktionieren. 
+
+**Wasser & Gehäuse:**
+- **Gehäuse:** Eurobox System Box Vollwand 40x30x12 cm, Grau inkl. Deckel
+- **Wassertank:** 60 Liter Wasserfass
+- **Pumpe:** T.I.P. Deep Inox (DIO) 45/13 (4-Zoll Tiefbrunnenpumpe)
+- **Ventile:** 5x G1/4" elektronisches Magnetventil 12V (Funduino) für die Zonen (`switch.ventil_slot_1` bis `5`)
+- **Schläuche & Tropfer:** Gardena Micro-Drip-System Tropfbewässerung Set Balkon
+- **Gardena Adapter (statt Basisgerät):** Gardena Profi-System-Gerätestück 26,5 mm (G 3/4) & Gardena Hahn-Anschluss 4,6 mm (3/16")
+- **Fittings (Verteiler):** 1/4" Wasserzulaufleitung Fitting Set (T + Y + I + L Typ)
+
+---
+
+## 📸 Aufbau & 3D-Druckteile
+
+Damit die Elektronik und die Wasserverteilung (das Manifold) sicher und aufgeräumt untergebracht sind, ist das gesamte System in einer wetterfesten Eurobox verbaut. 
+
+**🖨️ 3D-Druckdateien:**
+Wenn du das System nachbauen möchtest, findest du alle von mir konstruierten Halterungen (für die Ventile, den ESP32 etc.) als fertige `.3mf`-Dateien direkt hier im Repository im Ordner [`/3d_druck`](./3d_druck).
+
+**Bilder aus der Praxis:**
+Hier siehst du, wie das Manifold (aus den 1/4" Fittings und Gardena-Adaptern) und die Elektronik im Gehäuse platziert wurden *(Bilder zum Vergrößern anklicken)*:
+
+*Innenansicht der Eurobox / Manifold*
+<br>
+<a href="https://github.com/user-attachments/assets/c024af20-4ca3-4c12-9047-9c8ef93392bd"><img src="https://github.com/user-attachments/assets/c024af20-4ca3-4c12-9047-9c8ef93392bd" alt="Innenansicht der Eurobox / Manifold" width="300"></a>
+
+*Ansicht Gehäuse unten*
+<br>
+<a href="https://github.com/user-attachments/assets/5b90ca3e-2273-432b-ac41-ec83036b4ba6"><img src="https://github.com/user-attachments/assets/5b90ca3e-2273-432b-ac41-ec83036b4ba6" alt="Ansicht Gehäuse unten" width="300"></a>
+
+*Ansicht Gehäuse oben*
+<br>
+<a href="https://github.com/user-attachments/assets/c7473101-2318-4e1d-9d1b-5fa6da537081"><img src="https://github.com/user-attachments/assets/c7473101-2318-4e1d-9d1b-5fa6da537081" alt="Ansicht Gehäuse oben" width="300"></a>
+
+*Ansicht Gehäuse geschlossen mit Kabelabdeckung*
+<br>
+<a href="https://github.com/user-attachments/assets/531e56e9-afdc-4778-a1e9-e41031fd6329"><img src="https://github.com/user-attachments/assets/531e56e9-afdc-4778-a1e9-e41031fd6329" alt="Ansicht Gehäuse geschlossen mit Kabelabdeckung" width="300"></a>
 
 ---
 
 ## 💻 Voraussetzungen & Software
 
 - **Zentrale:** Home Assistant
-- **HACS Frontend-Erweiterungen (Zwingend!):** `custom:grid-layout`, `custom:fluid-level-background-card`, `custom:fold-entity-row`, `custom:template-entity-row`, `custom:hui-markdown-card`, `card-mod` (für dynamische CSS Anpassungen)
+- **HACS Frontend-Erweiterungen (Zwingend!):** Bitte suche und installiere folgende Karten über den Home Assistant Community Store (HACS), damit das Dashboard korrekt angezeigt wird:
+  - `layout-card` (für das Responsive Grid-Layout)
+  - `fluid-level-background-card` (für die animierte Wassertank-Anzeige)
+  - `config-template-card`
+  - `fold-entity-row` (für die aufklappbaren Menüs)
+  - `template-entity-row`
+  - `card-mod` (für dynamische CSS-Anpassungen, wie Farbwechsel bei leerem Tank)
 
 ---
 
@@ -144,3 +190,9 @@ Für jeden der 5 Slots lässt sich die Gießlogik separat definieren:
 | `media_player.smart_speaker` | Dein Smart-Speaker für Warnungen (z.B. `media_player.wohnzimmer`) | `scripts.yaml` |
 
 *(Tipp: Wenn du keine Sprachausgabe für Warnungen nutzen möchtest, kannst du den `tts.speak`-Block in der `scripts.yaml` einfach löschen).*
+
+---
+
+## ⚠️ Disclaimer (Haftungsausschluss)
+
+**Wasser und Strom sind eine gefährliche Kombination!** Der Nachbau dieses Projekts erfolgt ausdrücklich auf eigene Gefahr. Bitte achte auf eine fachgerechte und wasserdichte Isolierung der Elektronik, sichere 230V-Komponenten ordnungsgemäß ab und nutze zwingend einen FI-Schutzschalter (RCD) für den Betrieb im Außenbereich.
