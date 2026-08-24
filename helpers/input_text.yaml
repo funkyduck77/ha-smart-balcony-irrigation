@@ -1,0 +1,24 @@
+aktuelles_giessevent:
+  name: "Aktuelles Gießevent"
+  icon: mdi:information
+
+slot_1_name:
+  name: "Slot 1 Pflanze"
+  initial: "Mara"
+  icon: mdi:flower
+slot_2_name:
+  name: "Slot 2 Pflanze"
+  initial: "Habanero"
+  icon: mdi:flower
+slot_3_name:
+  name: "Slot 3 Pflanze"
+  initial: "SBC"
+  icon: mdi:flower
+slot_4_name:
+  name: "Slot 4 Pflanze"
+  initial: "SCP"
+  icon: mdi:flower
+slot_5_name:
+  name: "Slot 5 Pflanze"
+  initial: "MOP"
+  icon: mdi:flower
