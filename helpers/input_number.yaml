@@ -1,0 +1,519 @@
+fass_volumen_max:
+  name: "Wasserfass Volumen (Max)"
+  min: 1
+  max: 200
+  step: 1
+  unit_of_measurement: "L"
+  icon: mdi:barrel
+  mode: box
+fass_totvolumen:
+  name: "Totvolumen Pumpe"
+  min: 0
+  max: 50
+  step: 0.5
+  unit_of_measurement: "L"
+  icon: mdi:water-minus
+  mode: box
+fass_warnpuffer:
+  name: "Wasserpuffer (Stand niedrig)"
+  min: 0
+  max: 30
+  step: 0.5
+  unit_of_measurement: "L"
+  icon: mdi:water-alert
+  mode: box
+wasserverbrauch_aktuell:
+  name: "Wasserverbrauch Aktuell"
+  min: 0
+  max: 200.0
+  step: 0.01
+  unit_of_measurement: "L"
+  mode: box
+wasserverbrauch_korrektur:
+  name: "Wasserverbrauch Korrektur"
+  min: 0
+  max: 200.0
+  step: 0.1
+  unit_of_measurement: "L"
+  mode: box
+pumpen_watchdog_minuten:
+  name: "Pumpe-Not-Aus"
+  min: 1
+  max: 30
+  step: 1
+  unit_of_measurement: "min"
+  icon: mdi:water-pump-off
+  mode: box
+sperrzeit_hitze_schwelle:
+  name: "Hitze-Schwelle (°C)"
+  min: 20
+  max: 45
+  step: 0.5
+  unit_of_measurement: "°C"
+  mode: box
+  icon: mdi:thermometer-high
+sperrzeit_hitze_max_h:
+  name: "Hitze Sperrzeit-Limit"
+  min: 1
+  max: 120
+  step: 1
+  unit_of_measurement: "h"
+  mode: box
+  icon: mdi:timer-alert
+maximale_giess_runden:
+  name: "Max. Gieß-Runden"
+  min: 1
+  max: 20
+  step: 1
+  icon: mdi:refresh-circle
+  mode: box
+
+# --- SLOT 1 ---
+slot_1_durchfluss:
+  name: "Slot 1: Durchfluss"
+  min: 1
+  max: 50
+  step: 1
+  unit_of_measurement: "L/h"
+  mode: box
+  icon: mdi:water-pump
+slot_1_feuchte_min:
+  name: "Slot 1: Startwert (Min)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-alert
+slot_1_feuchte_max:
+  name: "Slot 1: Zielwert (Max)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-check
+slot_1_feuchte_notfall:
+  name: "Slot 1: Notfall-Limit"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:alert-octagon
+slot_1_impuls_dauer:
+  name: "Slot 1: Dauer Normal"
+  min: 1
+  max: 15
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-outline
+slot_1_impuls_dauer_notfall:
+  name: "Slot 1: Dauer Notfall"
+  min: 1
+  max: 30
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_1_sicker_pause:
+  name: "Slot 1: Sickerpause"
+  min: 1
+  max: 300
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_1_sperrzeit_stunden:
+  name: "Slot 1: Sperrzeit"
+  min: 1
+  max: 120
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-lock
+slot_1_sperrzeit_notfall_stunden:
+  name: "Slot 1: Notfall-Sperrzeit"
+  min: 1
+  max: 48
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-alert
+slot_1_sonne_start_offset:
+  name: "Slot 1: Min. nach Aufgang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-up
+slot_1_sonne_ende_offset:
+  name: "Slot 1: Min. vor Untergang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-down
+
+# --- SLOT 2 ---
+slot_2_durchfluss:
+  name: "Slot 2: Durchfluss"
+  min: 1
+  max: 50
+  step: 1
+  unit_of_measurement: "L/h"
+  mode: box
+  icon: mdi:water-pump
+slot_2_feuchte_min:
+  name: "Slot 2: Startwert (Min)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-alert
+slot_2_feuchte_max:
+  name: "Slot 2: Zielwert (Max)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-check
+slot_2_feuchte_notfall:
+  name: "Slot 2: Notfall-Limit"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:alert-octagon
+slot_2_impuls_dauer:
+  name: "Slot 2: Dauer Normal"
+  min: 1
+  max: 15
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-outline
+slot_2_impuls_dauer_notfall:
+  name: "Slot 2: Dauer Notfall"
+  min: 1
+  max: 30
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_2_sicker_pause:
+  name: "Slot 2: Sickerpause"
+  min: 1
+  max: 300
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_2_sperrzeit_stunden:
+  name: "Slot 2: Sperrzeit"
+  min: 1
+  max: 120
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-lock
+slot_2_sperrzeit_notfall_stunden:
+  name: "Slot 2: Notfall-Sperrzeit"
+  min: 1
+  max: 48
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-alert
+slot_2_sonne_start_offset:
+  name: "Slot 2: Min. nach Aufgang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-up
+slot_2_sonne_ende_offset:
+  name: "Slot 2: Min. vor Untergang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-down
+
+# --- SLOT 3 ---
+slot_3_durchfluss:
+  name: "Slot 3: Durchfluss"
+  min: 1
+  max: 50
+  step: 1
+  unit_of_measurement: "L/h"
+  mode: box
+  icon: mdi:water-pump
+slot_3_feuchte_min:
+  name: "Slot 3: Startwert (Min)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-alert
+slot_3_feuchte_max:
+  name: "Slot 3: Zielwert (Max)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-check
+slot_3_feuchte_notfall:
+  name: "Slot 3: Notfall-Limit"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:alert-octagon
+slot_3_impuls_dauer:
+  name: "Slot 3: Dauer Normal"
+  min: 1
+  max: 15
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-outline
+slot_3_impuls_dauer_notfall:
+  name: "Slot 3: Dauer Notfall"
+  min: 1
+  max: 30
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_3_sicker_pause:
+  name: "Slot 3: Sickerpause"
+  min: 1
+  max: 300
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_3_sperrzeit_stunden:
+  name: "Slot 3: Sperrzeit"
+  min: 1
+  max: 120
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-lock
+slot_3_sperrzeit_notfall_stunden:
+  name: "Slot 3: Notfall-Sperrzeit"
+  min: 1
+  max: 48
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-alert
+slot_3_sonne_start_offset:
+  name: "Slot 3: Min. nach Aufgang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-up
+slot_3_sonne_ende_offset:
+  name: "Slot 3: Min. vor Untergang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-down
+
+# --- SLOT 4 ---
+slot_4_durchfluss:
+  name: "Slot 4: Durchfluss"
+  min: 1
+  max: 50
+  step: 1
+  unit_of_measurement: "L/h"
+  mode: box
+  icon: mdi:water-pump
+slot_4_feuchte_min:
+  name: "Slot 4: Startwert (Min)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-alert
+slot_4_feuchte_max:
+  name: "Slot 4: Zielwert (Max)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-check
+slot_4_feuchte_notfall:
+  name: "Slot 4: Notfall-Limit"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:alert-octagon
+slot_4_impuls_dauer:
+  name: "Slot 4: Dauer Normal"
+  min: 1
+  max: 15
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-outline
+slot_4_impuls_dauer_notfall:
+  name: "Slot 4: Dauer Notfall"
+  min: 1
+  max: 30
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_4_sicker_pause:
+  name: "Slot 4: Sickerpause"
+  min: 1
+  max: 300
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_4_sperrzeit_stunden:
+  name: "Slot 4: Sperrzeit"
+  min: 1
+  max: 120
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-lock
+slot_4_sperrzeit_notfall_stunden:
+  name: "Slot 4: Notfall-Sperrzeit"
+  min: 1
+  max: 48
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-alert
+slot_4_sonne_start_offset:
+  name: "Slot 4: Min. nach Aufgang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-up
+slot_4_sonne_ende_offset:
+  name: "Slot 4: Min. vor Untergang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-down
+
+# --- SLOT 5 ---
+slot_5_durchfluss:
+  name: "Slot 5: Durchfluss"
+  min: 1
+  max: 50
+  step: 1
+  unit_of_measurement: "L/h"
+  mode: box
+  icon: mdi:water-pump
+slot_5_feuchte_min:
+  name: "Slot 5: Startwert (Min)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-alert
+slot_5_feuchte_max:
+  name: "Slot 5: Zielwert (Max)"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:water-check
+slot_5_feuchte_notfall:
+  name: "Slot 5: Notfall-Limit"
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: "%"
+  icon: mdi:alert-octagon
+slot_5_impuls_dauer:
+  name: "Slot 5: Dauer Normal"
+  min: 1
+  max: 15
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-outline
+slot_5_impuls_dauer_notfall:
+  name: "Slot 5: Dauer Notfall"
+  min: 1
+  max: 30
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_5_sicker_pause:
+  name: "Slot 5: Sickerpause"
+  min: 1
+  max: 300
+  step: 1
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+slot_5_sperrzeit_stunden:
+  name: "Slot 5: Sperrzeit"
+  min: 1
+  max: 120
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-lock
+slot_5_sperrzeit_notfall_stunden:
+  name: "Slot 5: Notfall-Sperrzeit"
+  min: 1
+  max: 48
+  step: 1
+  mode: box
+  unit_of_measurement: "h"
+  icon: mdi:timer-alert
+slot_5_sonne_start_offset:
+  name: "Slot 5: Min. nach Aufgang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-up
+slot_5_sonne_ende_offset:
+  name: "Slot 5: Min. vor Untergang"
+  min: 0
+  max: 300
+  step: 15
+  mode: box
+  unit_of_measurement: "min"
+  icon: mdi:weather-sunset-down
