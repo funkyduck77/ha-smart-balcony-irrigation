@@ -1,0 +1,711 @@
+views:
+  - title: Bewässerung
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: vertical-stack
+                cards:
+                  - type: custom:fluid-level-background-card
+                    entity: sensor.fass_restwasser
+                    full_value: 60
+                    level_color: rgba(74, 117, 160, 0.8)
+                    card:
+                      type: markdown
+                      content: >
+                        Wasserfass: {{ states('input_number.fass_volumen_max')
+                        }} L
+
+                        (Netto: {{ (states('input_number.fass_volumen_max') |
+                        float(60) - states('input_number.fass_totvolumen') |
+                        float(0)) | round(1) }} L)
+
+                        Restwasser: {{ (states('sensor.fass_restwasser') |
+                        float(60) - states('input_number.fass_totvolumen') |
+                        float(0)) | round(1) }} L
+                      card_mod:
+                        style: |
+                          ha-card {
+                            background: transparent !important;
+                            border: none !important;
+                            box-shadow: inset 0px 0px 25px rgba(0,0,0,0.6) !important;
+                            min-height: 220px !important;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                          }
+                    card_mod:
+                      style: |
+                        :host {
+                          display: block !important;
+                          width: 220px !important;
+                          margin: 15px auto 30px auto !important;
+                          border-radius: 24px !important;
+                          border: 3px solid rgba(150, 150, 150, 0.2) !important;
+                          overflow: hidden !important;
+                          box-shadow: 0px 6px 15px rgba(0,0,0,0.2) !important;
+                          transform: translateZ(0);
+                          -webkit-mask-image: -webkit-radial-gradient(white, black);
+                          {% set status = states('sensor.fass_fullstand_status') %}
+                          {% if status == 'leer' %}
+                            filter: hue-rotate(150deg) saturate(300%) !important;
+                          {% elif status == 'niedrig' %}
+                            filter: hue-rotate(180deg) saturate(250%) !important;
+                          {% endif %}
+                        }
+                  - type: markdown
+                    content: >
+                      ### Home Assistant Bewässerung
+
+                      **Aktueller Pumpen-Status:**
+
+                      ## {% if is_state('switch.wsp_2_steckdose_1', 'on') %} 💦
+                      Gießt... {% else %} Aus {% endif %}
+
+                      {% if is_state('switch.wsp_2_steckdose_1', 'on') %} {% set
+                      event = states('input_text.aktuelles_giessevent') %} {% if
+                      event in ['unknown', 'unavailable', ''] %} **Aktives
+                      Event:** Manuell ausgelöst {% else %} **Aktives Event:**
+                      {{ event }} {% endif %} {% endif %}
+
+                      {% if is_state('input_boolean.pumpen_sperre', 'on') %} 🚨
+                      **GESPERRT: Trockenlauf-Schutz aktiv!** {% else %} {% set
+                      ns = namespace(probleme=[]) %} {% for i in range(1, 6) %}
+                        {% set slot = i | string %}
+                        {% set name = states('input_text.slot_' ~ slot ~ '_name') %}
+                        {% set feuchte_str = states('sensor.gw1100a_soil_moisture_' ~ slot) %}
+                        {% if feuchte_str not in ['unknown', 'unavailable', ''] %}
+                          {% set feuchte = feuchte_str | float(100) %}
+                          {% set min = states('input_number.slot_' ~ slot ~ '_feuchte_min') | float(0) %}
+                          {% set max = states('input_number.slot_' ~ slot ~ '_feuchte_max') | float(100) %}
+                          {% set notfall = states('input_number.slot_' ~ slot ~ '_feuchte_notfall') | float(0) %}
+                          {% set u_modus = is_state('input_boolean.slot_' ~ slot ~ '_untersetzer_modus', 'on') %}
+
+                          {% set err = [] %}
+                          {% if feuchte < notfall %}
+                            {% set err = err + ['🆘 Kritisch trocken (' ~ feuchte ~ '%)'] %}
+                          {% elif feuchte < min %}
+                            {% set err = err + ['🌵 Zu trocken (' ~ feuchte ~ '%)'] %}
+                          {% elif not u_modus and feuchte > max %}
+                            {% set err = err + ['💧 Zu nass (' ~ feuchte ~ '%)'] %}
+                          {% endif %}
+
+                          {% if err | length > 0 %}
+                            {% set ns.probleme = ns.probleme + ['**' ~ name ~ '**: ' ~ err | join(', ')] %}
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+
+
+                      {% if ns.probleme | length > 0 %} 🚨 **Achtung,
+                      Handlungsbedarf:**<br> {{ ns.probleme | join('<br>') }} {%
+                      else %} ✅ **Boden & Pflanzen im optimalen Bereich.**
+                      System bereit. {% endif %} {% endif %}
+
+                      <br><b>Wassertank (nutzbar):</b><br><em>{{
+                      (states('sensor.fass_restwasser') | float(60) -
+                          states('input_number.fass_totvolumen') | float(0)) | round(1) }} L ({{states('sensor.fass_restwasser_prozent') }} %)</em>
+
+                      <b>Status:</b> {% set status =
+                      states('sensor.fass_fullstand_status')
+
+                      %} {% if status == 'leer' %}
+                        <font color="red">Kritisch: Pumpe gestoppt (Fass leer)</font>
+                      {% elif status == 'niedrig' %}
+                        <font color="orange">Warnung: Wasserstand niedrig</font>
+                      {% else %}
+                        <font color="green">Wasserstand ok</font>
+                      {% endif %} 
+      - type: entities
+        title: Bewässerungs-Konfiguration
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Globale Einstellungen
+            entities:
+              - entity: input_number.fass_volumen_max
+                name: Fass Volumen (Max)
+              - entity: input_number.fass_totvolumen
+                name: Totvolumen Pumpe
+              - entity: input_number.fass_warnpuffer
+                name: Wasserpuffer (Stand niedrig)
+              - input_number.pumpen_watchdog_minuten
+              - input_number.sperrzeit_hitze_schwelle
+              - input_number.sperrzeit_hitze_max_h
+              - input_number.maximale_giess_runden
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Zuweisung der Pflanzennamen
+                show_header_toggle: false
+                entities:
+                  - entity: input_text.slot_1_name
+                    name: Slot 1 Pflanze
+                  - entity: input_text.slot_2_name
+                    name: Slot 2 Pflanze
+                  - entity: input_text.slot_3_name
+                    name: Slot 3 Pflanze
+                  - entity: input_text.slot_4_name
+                    name: Slot 4 Pflanze
+                  - entity: input_text.slot_5_name
+                    name: Slot 5 Pflanze
+          - type: section
+            label: Einzelpflanzen-Feinjustierung
+          - type: custom:fold-entity-row
+            head:
+              type: custom:template-entity-row
+              entity: sensor.gw1100a_soil_moisture_1
+              name: 'Slot 1: {{ states(''input_text.slot_1_name'') }}'
+              state: '{{ states(''sensor.gw1100a_soil_moisture_1'') }} %'
+            entities:
+              - entity: input_boolean.slot_1_untersetzer_modus
+                name: Untersetzer-Modus
+              - entity: input_number.slot_1_feuchte_min
+                name: Startwert (Min)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_1_feuchte_max
+                  name: Zielwert (Max)
+              - entity: input_number.slot_1_impuls_dauer
+                name: Dauer Normal
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_1_sicker_pause
+                  name: Sickerpause
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_1_sperrzeit_stunden
+                  name: Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_1_sperrzeit_rest
+                  name: ⏳ Verbleibend
+              - entity: input_number.slot_1_durchfluss
+                name: Durchfluss
+              - entity: input_boolean.slot_1_sonnen_modus
+                name: Sonne statt Uhrzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_1_start_zeit
+                  name: Startzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_1_ende_zeit
+                  name: Endzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_1_sonne_start_offset
+                  name: Min. nach Aufgang
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_1_sonne_ende_offset
+                  name: Min. vor Untergang
+              - type: divider
+              - entity: input_number.slot_1_feuchte_notfall
+                name: Notfall-Limit
+              - entity: input_number.slot_1_impuls_dauer_notfall
+                name: Dauer Notfall
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_1_sperrzeit_notfall_stunden
+                  name: Notfall-Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_1_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_1_notfall_sperrzeit_rest
+                  name: ⏳ Verbleibend (Notfall)
+          - type: divider
+          - type: custom:fold-entity-row
+            head:
+              type: custom:template-entity-row
+              entity: sensor.gw1100a_soil_moisture_2
+              name: 'Slot 2: {{ states(''input_text.slot_2_name'') }}'
+              state: '{{ states(''sensor.gw1100a_soil_moisture_2'') }} %'
+            entities:
+              - entity: input_boolean.slot_2_untersetzer_modus
+                name: Untersetzer-Modus
+              - entity: input_number.slot_2_feuchte_min
+                name: Startwert (Min)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_2_feuchte_max
+                  name: Zielwert (Max)
+              - entity: input_number.slot_2_impuls_dauer
+                name: Dauer Normal
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_2_sicker_pause
+                  name: Sickerpause
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_2_sperrzeit_stunden
+                  name: Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_2_sperrzeit_rest
+                  name: ⏳ Verbleibend
+              - entity: input_number.slot_2_durchfluss
+                name: Durchfluss
+              - entity: input_boolean.slot_2_sonnen_modus
+                name: Sonne statt Uhrzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_2_start_zeit
+                  name: Startzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_2_ende_zeit
+                  name: Endzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_2_sonne_start_offset
+                  name: Min. nach Aufgang
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_2_sonne_ende_offset
+                  name: Min. vor Untergang
+              - type: divider
+              - entity: input_number.slot_2_feuchte_notfall
+                name: Notfall-Limit
+              - entity: input_number.slot_2_impuls_dauer_notfall
+                name: Dauer Notfall
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_2_sperrzeit_notfall_stunden
+                  name: Notfall-Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_2_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_2_notfall_sperrzeit_rest
+                  name: ⏳ Verbleibend (Notfall)
+          - type: divider
+          - type: custom:fold-entity-row
+            head:
+              type: custom:template-entity-row
+              entity: sensor.gw1100a_soil_moisture_3
+              name: 'Slot 3: {{ states(''input_text.slot_3_name'') }}'
+              state: '{{ states(''sensor.gw1100a_soil_moisture_3'') }} %'
+            entities:
+              - entity: input_boolean.slot_3_untersetzer_modus
+                name: Untersetzer-Modus
+              - entity: input_number.slot_3_feuchte_min
+                name: Startwert (Min)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_3_feuchte_max
+                  name: Zielwert (Max)
+              - entity: input_number.slot_3_impuls_dauer
+                name: Dauer Normal
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_3_sicker_pause
+                  name: Sickerpause
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_3_sperrzeit_stunden
+                  name: Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_3_sperrzeit_rest
+                  name: ⏳ Verbleibend
+              - entity: input_number.slot_3_durchfluss
+                name: Durchfluss
+              - entity: input_boolean.slot_3_sonnen_modus
+                name: Sonne statt Uhrzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_3_start_zeit
+                  name: Startzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_3_ende_zeit
+                  name: Endzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_3_sonne_start_offset
+                  name: Min. nach Aufgang
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_3_sonne_ende_offset
+                  name: Min. vor Untergang
+              - type: divider
+              - entity: input_number.slot_3_feuchte_notfall
+                name: Notfall-Limit
+              - entity: input_number.slot_3_impuls_dauer_notfall
+                name: Dauer Notfall
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_3_sperrzeit_notfall_stunden
+                  name: Notfall-Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_3_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_3_notfall_sperrzeit_rest
+                  name: ⏳ Verbleibend (Notfall)
+          - type: divider
+          - type: custom:fold-entity-row
+            head:
+              type: custom:template-entity-row
+              entity: sensor.gw1100a_soil_moisture_4
+              name: 'Slot 4: {{ states(''input_text.slot_4_name'') }}'
+              state: '{{ states(''sensor.gw1100a_soil_moisture_4'') }} %'
+            entities:
+              - entity: input_boolean.slot_4_untersetzer_modus
+                name: Untersetzer-Modus
+              - entity: input_number.slot_4_feuchte_min
+                name: Startwert (Min)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_4_feuchte_max
+                  name: Zielwert (Max)
+              - entity: input_number.slot_4_impuls_dauer
+                name: Dauer Normal
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_4_sicker_pause
+                  name: Sickerpause
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_4_sperrzeit_stunden
+                  name: Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_4_sperrzeit_rest
+                  name: ⏳ Verbleibend
+              - entity: input_number.slot_4_durchfluss
+                name: Durchfluss
+              - entity: input_boolean.slot_4_sonnen_modus
+                name: Sonne statt Uhrzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_4_start_zeit
+                  name: Startzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_4_ende_zeit
+                  name: Endzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_4_sonne_start_offset
+                  name: Min. nach Aufgang
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_4_sonne_ende_offset
+                  name: Min. vor Untergang
+              - type: divider
+              - entity: input_number.slot_4_feuchte_notfall
+                name: Notfall-Limit
+              - entity: input_number.slot_4_impuls_dauer_notfall
+                name: Dauer Notfall
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_4_sperrzeit_notfall_stunden
+                  name: Notfall-Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_4_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_4_notfall_sperrzeit_rest
+                  name: ⏳ Verbleibend (Notfall)
+          - type: divider
+          - type: custom:fold-entity-row
+            head:
+              type: custom:template-entity-row
+              entity: sensor.gw1100a_soil_moisture_5
+              name: 'Slot 5: {{ states(''input_text.slot_5_name'') }}'
+              state: '{{ states(''sensor.gw1100a_soil_moisture_5'') }} %'
+            entities:
+              - entity: input_boolean.slot_5_untersetzer_modus
+                name: Untersetzer-Modus
+              - entity: input_number.slot_5_feuchte_min
+                name: Startwert (Min)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_5_feuchte_max
+                  name: Zielwert (Max)
+              - entity: input_number.slot_5_impuls_dauer
+                name: Dauer Normal
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_untersetzer_modus
+                    state: 'off'
+                row:
+                  entity: input_number.slot_5_sicker_pause
+                  name: Sickerpause
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_5_sperrzeit_stunden
+                  name: Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_5_sperrzeit_rest
+                  name: ⏳ Verbleibend
+              - entity: input_number.slot_5_durchfluss
+                name: Durchfluss
+              - entity: input_boolean.slot_5_sonnen_modus
+                name: Sonne statt Uhrzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_5_start_zeit
+                  name: Startzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_sonnen_modus
+                    state: 'off'
+                row:
+                  entity: input_datetime.slot_5_ende_zeit
+                  name: Endzeit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_5_sonne_start_offset
+                  name: Min. nach Aufgang
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_sonnen_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_5_sonne_ende_offset
+                  name: Min. vor Untergang
+              - type: divider
+              - entity: input_number.slot_5_feuchte_notfall
+                name: Notfall-Limit
+              - entity: input_number.slot_5_impuls_dauer_notfall
+                name: Dauer Notfall
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: input_number.slot_5_sperrzeit_notfall_stunden
+                  name: Notfall-Sperrzeit (h)
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.slot_5_untersetzer_modus
+                    state: 'on'
+                row:
+                  entity: sensor.slot_5_notfall_sperrzeit_rest
+                  name: ⏳ Verbleibend (Notfall)
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Manuelle Korrektur
+            entities:
+              - input_number.wasserverbrauch_korrektur
+              - type: button
+                name: Wert überschreiben
+                icon: mdi:check-bold
+                action_name: SPEICHERN
+                tap_action:
+                  action: call-service
+                  service: script.wasserverbrauch_manuell_korrigieren
+              - type: divider
+              - type: button
+                name: Wasserfass befüllt
+                icon: mdi:water-check
+                action_name: RESET
+                tap_action:
+                  action: call-service
+                  service: script.fass_befuellt_reset
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: System-Übersicht
+            show_header_toggle: false
+            entities:
+              - type: section
+                label: Hardware & Ventile
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Ventile
+                entities:
+                  - type: custom:template-entity-row
+                    entity: switch.irrigation_valve_1
+                    name: 'Ventil 1: {{ states(''input_text.slot_1_name'') }}'
+                    toggle: true
+                  - type: custom:template-entity-row
+                    entity: switch.irrigation_valve_2
+                    name: 'Ventil 2: {{ states(''input_text.slot_2_name'') }}'
+                    toggle: true
+                  - type: custom:template-entity-row
+                    entity: switch.irrigation_valve_3
+                    name: 'Ventil 3: {{ states(''input_text.slot_3_name'') }}'
+                    toggle: true
+                  - type: custom:template-entity-row
+                    entity: switch.irrigation_valve_4
+                    name: 'Ventil 4: {{ states(''input_text.slot_4_name'') }}'
+                    toggle: true
+                  - type: custom:template-entity-row
+                    entity: switch.irrigation_valve_5
+                    name: 'Ventil 5: {{ states(''input_text.slot_5_name'') }}'
+                    toggle: true
+              - entity: switch.wsp_2_steckdose_1
+                name: Pumpe
+              - entity: input_boolean.pumpen_sperre
+                name: Trockenlauf-Schutz
+          - type: entities
+            title: Logbuch
+            show_header_toggle: false
+            entities:
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Letzte Gießvorgänge
+                entities:
+                  - type: custom:hui-markdown-card
+                    content: >
+                      | Datum | Pflanze | Dauer | L/h | Verbrauch | Art |
+
+                      | :--- | :--- | :--- | :--- | :--- | :---: |
+
+                      {% set runden = state_attr('sensor.giess_historie',
+                      'letzte_runden') %}
+
+                      {% if runden %}
+                        {% for event in runden %}
+                          {% set farbe = '#2196F3' if event.type == 'M' else '#FFC107' %}
+                          {% set titletext = 'Manuell' if event.type == 'M' else 'Automatisch' %}
+                      | {{ event.zeit }} | {{ event.pflanze }} | {{ (event.dauer
+                      / 60) | round(1) }} min | {{ event.fluss | round(1) }} |
+                      {{ event.verbrauch | round(2) }} L | **<font color="{{
+                      farbe }}"><abbr title="{{ titletext }}">{{ event.type
+                      }}</abbr></font>** |
+                        {% endfor %}
+                      {% else %}
+
+                      | Keine Einträge vorhanden | | | | | |
+
+                      {% endif %} 
