@@ -67,12 +67,22 @@ Ein intelligentes, vollautomatisiertes und ausfallsicheres Bewässerungssystem f
 
 ## 🛡️ Sicherheitskonzept (Die Watchdogs)
 
-Da Wasserschäden auf Balkonen fatal sind, verfügt das System über mehrere redundante Sicherheitsmechanismen:
-1. **Füllstandschutz:** Hartes Abschalten der Pumpe (Trockenlaufschutz), sobald das Restwasser ≤ Totvolumen fällt.
-2. **Hardware-Trockenlaufschutz:** Zieht die Pumpe weniger als 150W Leistung (sie zieht Luft statt Wasser), wird sie in Sekunden blockiert.
-3. **Dynamischer Laufzeit-Watchdog:** Berechnet das zulässige Limit aus der aktuell höchsten Impuls-Dauer der offenen Ventile plus 2 Minuten Puffer.
-4. **Ghost-Prevention:** Schaltet die Pumpe sofort ab, falls kein Ventil geöffnet ist.
-5. **Hard-Watchdog (Pumpen-Not-Aus):** Ein global einstellbares, absolutes Zeitlimit im Dashboard (z. B. 10 Minuten). Läuft die Pumpe ununterbrochen länger als dieser Wert, wird sie knallhart zwangsabgeschaltet, falls alle anderen Wächter versagen sollten.
+Da Wasserschäden auf Balkonen gelinde gesagt ungünstig sind und Pumpen nicht trockenlaufen oder gegen große Widerstände arbeiten dürfen, verfügt das System über fünf redundante Sicherheitsmechanismen. Fällt eine Ebene aus, greift sofort die nächste:
+
+**1. Füllstandschutz (Software-Trockenlaufschutz)**
+Das System berechnet kontinuierlich das verbleibende Wasser im Fass über Gießzeit und angegebenen Durchfluss. Erreicht dieser berechnete Wert das von dir in den globalen Einstellungen definierte "Totvolumen" (die Menge an Wasser, die nicht angesaugt werden kann, plus die Wasserverdrängung der Pumpe selbst), wird die Pumpe softwareseitig blockiert. Das verhindert, dass sie bei leerem Fass anläuft.
+
+**2. Hardware-Trockenlaufschutz (Aktive Strommessung)**
+Sollte der berechnete Wasserstand falsch sein (z. B. durch manuelle Entnahme mit der Gießkanne), greift diese physische Absicherung. Die smarte Steckdose überwacht den Stromverbrauch der Pumpe in Echtzeit. Zieht die Pumpe plötzlich weniger als 150 Watt Leistung, bedeutet das: Sie pumpt keinen Widerstand (Wasser) mehr, sondern zieht Luft. Das System blockiert die Pumpe innerhalb von Sekunden. 
+
+**3. Dynamischer Laufzeit-Watchdog (Smartes Zeitlimit)**
+Diese Funktion verhindert Überschwemmungen bei einem fehlerhaften Ablauf. Da das System die Ventile immer brav nacheinander gießt (Queued-Modus), prüft es bei jedem Start, welches Ventil gerade öffnet. Es nimmt die für genau diesen Slot geplante Gießdauer und addiert pauschal 2 Minuten als Sicherheitspuffer. Läuft die Pumpe bei diesem einen Durchgang unvorhergesehen länger als dieser errechnete Wert, kappt der Watchdog den Strom.
+
+**4. Ghost-Prevention (Pumpen-Schutz)**
+Wenn die Pumpe anspringt – sei es durch einen Glitch oder manuelles Schalten der Steckdose – ohne dass ein Ventil geöffnet ist, pumpt sie massiv gegen eine geschlossene Wand. Dies kann die Pumpe schwer beschädigen. Die Ghost-Prevention prüft sofort: *„Pumpe ist AN, aber alle Ventile sind ZU?“* und blockiert die Pumpe augenblicklich.
+
+**5. Hard-Watchdog (Der absolute Not-Aus)**
+Die letzte Fail-Safe-Ebene, falls alle anderen Skripte versagen sollten. Im Dashboard definierst du eine absolute Maximalzeit für den Dauerbetrieb der Pumpe. **Wichtig:** Dieser Wert muss mindestens 1 Minute höher eingestellt sein als deine längste Einzel-Gießlaufzeit! Überschreitet die Laufzeit diesen Wert, wird die Pumpe gnadenlos zwangsabgeschaltet.
 
 ---
 
