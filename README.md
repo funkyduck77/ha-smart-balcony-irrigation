@@ -99,6 +99,15 @@ Da Wasserschäden auf Balkonen fatal sind, verfügt das System über mehrere red
 
 ---
 
+### 💡 Alternative: Direkter Hausanschluss
+Wenn du einen festen Wasseranschluss (Wasserhahn) auf dem Balkon hast, kannst du das Manifold auch direkt an die Hausleitung anschließen und dir das Wasserfass sowie die Pumpe sparen. 
+
+**⚠️ WICHTIGE SICHERHEITSHINWEISE für diese Variante:**
+- **Druckminderer ist Pflicht:** Ein Hausanschluss hat oft 4 Bar Druck. Ohne Druckminderer fliegen die Micro-Drip-Schläuche ab. Du musst zwingend das klassische **Gardena Basisgerät 1000 oder 2000** (reduziert auf 1,5 Bar) *vor* das Manifold setzen! (Die 3D-Druckdatei für den speziellen Halter des Basisgerätes liegt im Repo bei).
+- **Hauptventil (Master-Valve) nutzen:** Setze die kleinen Kunststoff-Ventile niemals 24/7 dem vollen Leitungsdruck aus (Überschwemmungsgefahr!). Nutze idealerweise ein robustes, vorgeschaltetes Magnetventil (z. B. ein stromlos geschlossenes 230V-Ventil) oder einen Bewässerungscomputer (z. B. eine smarte WLAN-Zeitschaltuhr) direkt am Wasserhahn, das nur dann öffnet, wenn das Home Assistant System einen Gießvorgang startet.
+
+---
+
 ## 📸 Aufbau & 3D-Druckteile
 
 Damit die Elektronik und die Wasserverteilung (das Manifold) sicher und aufgeräumt untergebracht sind, ist das gesamte System in einer wetterfesten Eurobox verbaut. 
