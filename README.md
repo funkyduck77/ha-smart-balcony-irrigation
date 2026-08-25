@@ -98,13 +98,16 @@ Da Wasserschäden auf Balkonen fatal sind, verfügt das System über mehrere red
 - **Fittings (Verteiler):** 1/4" Wasserzulaufleitung Fitting Set (T + Y + I + L Typ)
 
 ---
-
+ 
 ### 💡 Alternative: Direkter Hausanschluss
 Wenn du einen festen Wasseranschluss (Wasserhahn) auf dem Balkon hast, kannst du das Manifold auch direkt an die Hausleitung anschließen und dir das Wasserfass sowie die Pumpe sparen. 
 
-**⚠️ WICHTIGE SICHERHEITSHINWEISE für diese Variante:**
-- **Druckminderer ist Pflicht:** Ein Hausanschluss hat oft 4 Bar Druck. Ohne Druckminderer fliegen die Micro-Drip-Schläuche ab. Du musst zwingend das klassische **Gardena Basisgerät 1000 oder 2000** (reduziert auf 1,5 Bar) *vor* das Manifold setzen! (Die 3D-Druckdatei für den speziellen Halter des Basisgerätes liegt im Repo bei).
-- **Hauptventil (Master-Valve) nutzen:** Setze die kleinen Kunststoff-Ventile niemals 24/7 dem vollen Leitungsdruck aus (Überschwemmungsgefahr!). Nutze idealerweise ein robustes, vorgeschaltetes Magnetventil (z. B. ein stromlos geschlossenes 230V-Ventil) oder einen Bewässerungscomputer (z. B. eine smarte WLAN-Zeitschaltuhr) direkt am Wasserhahn, das nur dann öffnet, wenn das Home Assistant System einen Gießvorgang startet.
+*Der Anschluss auf diese Weise erfolgt auf eigene Verantwortung, da ich diese Anschlussmöglichkeit nicht getestet habe.*
+
+**Wichtige Hinweise für diese Variante:**
+- **Druckminderer (Zwingend erforderlich):** Ein Hausanschluss hat oft bis zu 4 Bar Druck. Du musst zwingend das klassische **Gardena Basisgerät 1000 oder 2000 (reduziert den Druck auf ca. 1,5 Bar)** *vor* das Manifold setzen, da sonst die Micro-Drip-Schläuche abplatzen. (Die 3D-Druckdatei für den speziellen Halter des Basisgerätes liegt den Druckdateien bei!).
+- **Hauptventil (Optional, aber empfohlen):** Es wird empfohlen, den Hausanschluss nicht 24/7 unter Druck stehen zu lassen. Ein smartes Hauptventil (z. B. ein über Home Assistant steuerbares Magnetventil oder ein Zigbee-Bewässerungscomputer am Hahn) bringt zusätzliche Sicherheit vor Wasserschäden. 
+- **Keine Code-Änderung nötig:** Die Logik ist bereits ab Werk für Hauptventile optimiert. Das System öffnet bei einem Gießvorgang *immer* erst das kleine Zonen-Ventil und schaltet 2 Sekunden später den Druck (die Pumpe / das Hauptventil) ein. Trage in der Installationstabelle einfach die Entität deines smarten Hauptventils bei `switch.pumpe_steckdose` ein.
 
 ---
 
